@@ -1,0 +1,3 @@
+Edited with built-in image_gen.
+
+Edit this existing AsyneStudio logo. Change ONLY the background to solid opaque pure white (#FFFFFF), including all negative spaces inside the monogram and lettering. No transparency anywhere in the background. Preserve the exact existing AS monogram design, olive green colors, typography, exact text "AsyneStudio", dimensions, placement and proportions. Do not redesign, add effects, or add text. Output the same logo on a completely white background.

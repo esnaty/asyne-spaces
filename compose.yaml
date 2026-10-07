@@ -1,0 +1,55 @@
+name: asyne-studio
+services:
+  studio:
+    build: .
+    volumes:
+      - ./public/media:/usr/share/nginx/html/media:ro
+    ports:
+      - "127.0.0.1:5180:80"
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+  api:
+    volumes:
+      - ./public/media:/app/media
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      NODE_ENV: production
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: asyne
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      PGDATABASE: asyne
+      PINTEREST_APP_ID: ${PINTEREST_APP_ID:-}
+      PINTEREST_APP_SECRET: ${PINTEREST_APP_SECRET:-}
+      PINTEREST_TOKEN_KEY: ${PINTEREST_TOKEN_KEY:-}
+      PINTEREST_REDIRECT_URI: ${PINTEREST_REDIRECT_URI:-http://localhost:5180/api/pinterest/callback}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: asyne
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: asyne
+    volumes:
+      - studio-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asyne -d asyne"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  studio-data:

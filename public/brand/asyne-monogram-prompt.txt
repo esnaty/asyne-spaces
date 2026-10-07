@@ -1,0 +1,1 @@
+Built-in ImageGen edit: preserve the olive AS monogram from the white logo, remove wordmark, center and enlarge on square white background for favicon use. Exported to 32, 180 and 192 pixel PNG icons.
